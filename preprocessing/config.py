@@ -1,0 +1,33 @@
+import os
+
+ORIG_TRAIN_PATH = "../MoNuSeg/MoNuSeg 2018 Training Data"
+ORIG_TEST_PATH = "../MoNuSeg/MoNuSegTestData"
+NEW_DATA_PATH = "../data"
+
+TRAIN_VAL_FILES = {
+    "breast": ["TCGA-A7-A13E-01Z-00-DX1", "TCGA-A7-A13F-01Z-00-DX1", "TCGA-AR-A1AK-01Z-00-DX1",
+               "TCGA-AR-A1AS-01Z-00-DX1", "TCGA-E2-A1B5-01Z-00-DX1", "TCGA-E2-A14V-01Z-00-DX1"],
+    "kidney": ["TCGA-B0-5711-01Z-00-DX1", "TCGA-HE-7128-01Z-00-DX1", "TCGA-HE-7129-01Z-00-DX1",
+               "TCGA-HE-7130-01Z-00-DX1", "TCGA-B0-5710-01Z-00-DX1", "TCGA-B0-5698-01Z-00-DX1"],
+    "liver": ["TCGA-18-5592-01Z-00-DX1", "TCGA-38-6178-01Z-00-DX1", "TCGA-49-4488-01Z-00-DX1",
+              "TCGA-50-5931-01Z-00-DX1", "TCGA-21-5784-01Z-00-DX1", "TCGA-21-5786-01Z-00-DX1"],
+    "prostate": ["TCGA-G9-6336-01Z-00-DX1", "TCGA-G9-6348-01Z-00-DX1", "TCGA-G9-6356-01Z-00-DX1",
+                 "TCGA-G9-6363-01Z-00-DX1", "TCGA-CH-5767-01Z-00-DX1", "TCGA-G9-6362-01Z-00-DX1"],
+    "bladder": ["TCGA-DK-A2I6-01A-01-TS1", "TCGA-G2-A2EK-01A-02-TSB"],
+    "colon": ["TCGA-AY-A8YK-01A-01-TS1", "TCGA-NH-A8F7-01A-01-TS1"],
+    "stomach": ["TCGA-KB-A93J-01A-01-TS1", "TCGA-RD-A8N9-01A-01-TS1"],
+    "unlabled": ['TCGA-BC-A217-01Z-00-DX1', 'TCGA-F9-A8NY-01Z-00-DX1', 'TCGA-FG-A87N-01Z-00-DX1',
+                 'TCGA-MH-A561-01Z-00-DX1', 'TCGA-UZ-A9PJ-01Z-00-DX1', 'TCGA-UZ-A9PN-01Z-00-DX1',
+                 'TCGA-XS-A8TJ-01Z-00-DX1']
+}
+
+# brain and lung images are not included in train/val data
+TEST_FILES = {
+    "breast": ['TCGA-AC-A2FO-01A-01-TS1', 'TCGA-AO-A0J2-01A-01-BSA'],
+    "kidney": ['TCGA-2Z-A9J9-01A-01-TS1', 'TCGA-GL-6846-01A-01-BS1', 'TCGA-IZ-8196-01A-01-BS1'],
+    "prostate": ['TCGA-EJ-A46H-01A-03-TSC', 'TCGA-HC-7209-01A-01-TS1'],
+    "bladder": ['TCGA-CU-A0YN-01A-02-BSB', 'TCGA-ZF-A9R5-01A-01-TS1'],
+    "colon": ['TCGA-A6-6782-01A-01-BS1'],
+    "lung": ['TCGA-44-2665-01B-06-BS6', 'TCGA-69-7764-01A-01-TS1'],
+    "brain": ['TCGA-FG-A4MU-01B-01-TS1', 'TCGA-HT-8564-01Z-00-DX1']
+}
