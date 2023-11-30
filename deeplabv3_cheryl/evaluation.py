@@ -27,7 +27,7 @@ def evaluate_model(model, dataloader):
             total_samples += inputs.size(0)
 
     mean_iou = total_iou / total_samples
-    print(f'Mean IoU: {mean_iou:.4f}')
+    return mean_iou
 
 
 if __name__ == "__main__":
@@ -61,8 +61,18 @@ if __name__ == "__main__":
             weights=torch.load(os.path.join(SAVE_PATH, "trained_fcn.pth"), map_location=DEVICE)
         )
 
-        evaluate_model(model_wrapper.model, test_dataloader)
+        mean_iou = evaluate_model(model_wrapper.model, test_dataloader)
         test_accuracy = calculate_accuracy(model_wrapper.model, test_dataloader, model_wrapper.criterion)
 
         # Print the results
         print(f'Overall Accuracy: {test_accuracy * 100:.2f}%')
+        print(f'Mean IoU: {mean_iou:.4f}')
+
+        # Write the results into a text file
+        result_file_path = f"evaluation_results_{split}.txt"
+        with open(result_file_path, 'w') as result_file:
+            result_file.write(f'Overall Accuracy: {test_accuracy * 100:.2f}%\n')
+            result_file.write(f'Mean IoU: {mean_iou:.4f}\n')
+
+        print(f'Results written to: {result_file_path}')
+
