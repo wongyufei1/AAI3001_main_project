@@ -12,12 +12,11 @@ class CustomDataset(Dataset):
         self.mask_dir = mask_dir
         self.annotation_paths = annotation_paths
         self.transform = transform or transforms.ToTensor()
-        # Ensure the mask directory exists
-        if not os.path.exists(mask_dir):
-            os.makedirs(mask_dir)
 
         if annotation_paths is not None:
-            self._create_masks()
+            self.masks = self._create_masks()
+        else:
+            self.masks = None
 
     def __len__(self):
         return len(self.image_paths)
@@ -26,22 +25,25 @@ class CustomDataset(Dataset):
         img_path = self.image_paths[idx]
         img = Image.open(img_path).convert('RGB')
 
-        mask_name = os.path.basename(img_path).replace('.tif', '.png')
-        mask_path = os.path.join(self.mask_dir, mask_name)
-        mask = Image.open(mask_path).convert('L')
+        if self.masks is not None:
+            mask = Image.fromarray(self.masks[idx])
+        else:
+            mask = None
 
         img = self.transform(img)
-        mask = self.transform(mask)
+        if mask is not None:
+            mask = self.transform(mask)
 
         return img, mask
 
     def _create_masks(self):
-        for img_path, annotation_path in zip(self.image_paths, self.annotation_paths):
-            mask_name = os.path.basename(img_path).replace('.tif', '.png')
-            mask_path = os.path.join(self.mask_dir, mask_name)
+        masks = []
 
-            if not os.path.exists(mask_path):
-                self._create_mask(annotation_path, Image.open(img_path).size, mask_path)
+        for img_path, annotation_path in zip(self.image_paths, self.annotation_paths):
+            mask = self._xml_to_mask(annotation_path, Image.open(img_path).size)
+            masks.append(mask)
+
+        return masks
 
     def _xml_to_mask(self, xml_file, img_shape):
         tree = ET.parse(xml_file)
@@ -59,3 +61,4 @@ class CustomDataset(Dataset):
             cv2.fillPoly(mask, np_polygon, 255)  # Fill polygon with 255
 
         return mask
+
