@@ -3,19 +3,20 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
-from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large
-from deeplabv3_cheryl.utils.CustomDataset import CustomDataset
-from deeplabv3_cheryl.utils.metrics_functions import iou
+from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large, DeepLabV3_MobileNet_V3_Large_Weights
+from utils.CustomDataset import CustomDataset
+from utils.metrics_functions import iou
 import os
 import matplotlib.pyplot as plt
+from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
 
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 """Data Pre-processing"""
 
-images_folder = '..\MoNuSeg\MoNuSeg 2018 Training Data\Images'
-annotations_folder = '..\MoNuSeg\MoNuSeg 2018 Training Data\Annotations'
+images_folder = 'MoNuSeg 2018 Training Data/Tissue Images'
+annotations_folder = 'MoNuSeg 2018 Training Data/Annotations'
 
 image_paths = [os.path.join(images_folder, f) for f in os.listdir(images_folder) if f.endswith('.tif')]
 annotation_paths = [os.path.join(annotations_folder, f.replace('.tif', '.xml')) for f in os.listdir(images_folder) if f.endswith('.tif')]
@@ -41,8 +42,10 @@ val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
 
 """Model Training"""
 # Model, Loss function, Optimizer
-model = deeplabv3_mobilenet_v3_large(pretrained=True)
-model = model.to(device)
+model_1 = deeplabv3_mobilenet_v3_large(weight = DeepLabV3_MobileNet_V3_Large_Weights)
+model_1 = model_1.to(device)
+model_2 = fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, progress=True).to(device)
+model_2.classifier[4] = nn.Conv2d(512, 1, kernel_size=(1, 1), stride=(1, 1)).to(device)
 
 # Training and Validation Loops
 num_epochs = 10

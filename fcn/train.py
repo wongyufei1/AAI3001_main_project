@@ -48,12 +48,7 @@ test_dataset = MoNuSegDataset(
     annotation_paths=test_annotation_paths,
     mask_dir='masks/test'
 )
-with open('train_images.json', 'w') as f:
-    json.dump(train_image_paths, f)
-with open('val_images.json', 'w') as f:
-    json.dump(val_image_paths, f)
-with open('test_images.json', 'w') as f:
-    json.dump(test_image_paths, f)
+
 
 train_loader = DataLoader(train_dataset, batch_size=4, shuffle=True)
 val_loader = DataLoader(val_dataset, batch_size=4, shuffle=True)
