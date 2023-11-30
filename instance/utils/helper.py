@@ -2,6 +2,8 @@ import cv2
 import numpy as np
 import torch
 import xml.etree.ElementTree as ET
+import seaborn as sns
+from matplotlib import pyplot as plt
 
 from numpy import int32
 
@@ -46,10 +48,32 @@ def generate_bbox(masks):
             areas.append(area)
             save_masks.append(mask)
 
-    return np.array(bboxes), np.array(areas), np.array(save_masks)
+    return np.array(bboxes), np.array(areas), np.stack(save_masks)
 
 
 def collate_fn(batch):
     imgs = torch.stack([img for img, target in batch])
     targets = [target for img, target in batch]
     return [imgs, targets]
+
+
+def plot_loss(train_losses, val_losses, path):
+    figure, ax = plt.subplots(1, 1, figsize=(10, 7))
+
+    train_losses = np.array(train_losses)
+    val_losses = np.array(val_losses)
+
+    # plot train and validation losses
+    sns.lineplot(x=range(len(train_losses)),
+                 y=train_losses,
+                 ax=ax, label="Train loss")
+    sns.lineplot(x=range(len(val_losses)),
+                 y=val_losses,
+                 ax=ax, label="Valid loss")
+
+    ax.set_title("Best Model's Average Losses Over Epochs")
+    ax.set_xlabel("Epoch")
+    ax.set_ylabel("Average Loss")
+
+    plt.savefig(path, bbox_inches="tight")
+    plt.show()

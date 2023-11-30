@@ -6,10 +6,10 @@ import torchvision
 from torch.utils.data import DataLoader
 from torchvision.transforms import v2 as T
 
-from modules.config import *
-from modules.dataset import MoNuSegDataset
-from modules.model_wrapper import MRCNNModelWrapper
-from modules.helper import *
+from utils.config import *
+from utils.dataset import MoNuSegDataset
+from utils.model_wrapper import MRCNNModelWrapper
+from utils.helper import *
 
 if __name__ == "__main__":
     transforms = {
@@ -25,8 +25,8 @@ if __name__ == "__main__":
     }
 
     dataset = {
-        "train": MoNuSegDataset("./MoNuSeg/MoNuSeg 2018 Training Data", transforms=transforms["train_flip"]),
-        "val": MoNuSegDataset("./MoNuSeg/MoNuSegTestData", transforms=None)
+        "train": MoNuSegDataset("../MoNuSeg/MoNuSeg 2018 Training Data", transforms=transforms["train_flip"]),
+        "val": MoNuSegDataset("../MoNuSeg/MoNuSegTestData", transforms=None)
     }
     dataloader = {
         "train": DataLoader(dataset["train"], batch_size=BATCH_SIZE, shuffle=True, collate_fn=collate_fn),
@@ -50,7 +50,7 @@ if __name__ == "__main__":
                 n_classes=N_CLASSES,
                 device=DEVICE,
                 optimizer=optimizer,
-                epochs=EPOCHS
+                epochs=EPOCHS,
             )
 
             epoch, loss, weights = model_wrapper.fit(train_loader=dataloader["train"], val_loader=dataloader["val"])
@@ -62,5 +62,10 @@ if __name__ == "__main__":
                 best_model["loss"] = loss
                 best_model["weights"] = weights
 
+    if not os.path.exists(SAVE_PATH):
+        os.makedirs(SAVE_PATH)
+
+    plot_loss(model_wrapper.train_losses, model_wrapper.val_losses, os.path.join(SAVE_PATH, "loss.png"))
+
     print(f"Best model: {best_model}")
-    torch.save(best_model["weights"], "model.pt")
+    torch.save(best_model["weights"], os.path.join(SAVE_PATH, "model.pt"))

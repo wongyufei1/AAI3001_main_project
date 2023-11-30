@@ -1,19 +1,18 @@
-import os
 import torchvision.transforms.v2 as T
 
 from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import tv_tensors
 
-from modules.helper import *
+from instance.utils.helper import *
 
 
 class MoNuSegDataset(Dataset):
     def __init__(self, root, transforms=None):
         self.root = root
         self.transforms = transforms
-        self.img_files = sorted(os.listdir(os.path.join(root, "Images")))
-        self.mask_files = sorted(os.listdir(os.path.join(root, "Annotations")))
+        self.img_files = sorted(os.listdir(os.path.join(root, "Images")))[:1]
+        self.mask_files = sorted(os.listdir(os.path.join(root, "Annotations")))[:1]
         self.norm = T.Compose([
             T.ToImage(),
             T.ToDtype(torch.float32, scale=True),

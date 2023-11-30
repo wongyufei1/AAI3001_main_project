@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader
 from torchvision.transforms import v2 as T
 from torchvision.utils import draw_bounding_boxes, draw_segmentation_masks
 
-from modules.config import *
-from modules.dataset import MoNuSegDataset
-from modules.helper import collate_fn
-from modules.model_wrapper import MRCNNModelWrapper
+from utils.config import *
+from utils.dataset import MoNuSegDataset
+from utils.helper import collate_fn
+from utils.model_wrapper import MRCNNModelWrapper
 
 if __name__ == "__main__":
     dataset = MoNuSegDataset("./MoNuSeg/MoNuSegTestData", transforms=None)
