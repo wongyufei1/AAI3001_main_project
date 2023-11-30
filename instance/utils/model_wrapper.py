@@ -1,8 +1,12 @@
 # Optional: To modify Faster-RCNN to return losses in eval mode
 # https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn
 
+# Evaluation code used in link below
+# https://github.com/pytorch/vision/blob/main/references/detection/engine.py
+
 import gc
-import os
+import sys
+import time
 
 import torch
 
@@ -10,7 +14,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from tqdm import tqdm
 
-from modules.references import engine
+from instance.utils.references import engine
 
 
 class MRCNNModelWrapper:
@@ -77,16 +81,12 @@ class MRCNNModelWrapper:
 
         avg_loss = 0
 
-        print()
+        time.sleep(0.1)
         for batch in tqdm(dataloader):
             imgs = batch[0].to(self.device)
             targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
 
-            # print(imgs)
-            # print(targets)
-
             outputs = self.model(imgs, targets)
-            # print(outputs)
 
             # get the average loss of the classifier, bbox predictor, mask predictor
             loss = sum(l for l in outputs.values())
@@ -110,13 +110,12 @@ class MRCNNModelWrapper:
 
         # do not record computations for computing the gradient
         with torch.no_grad():
-            print()
+            time.sleep(0.1)
             for batch in tqdm(dataloader):
                 imgs = batch[0].to(self.device)
                 targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
 
                 outputs = self.model(imgs, targets)
-                # print(outputs)
 
                 # get the average loss of the classifier, bbox predictor, mask predictor
                 loss = sum(l for l in outputs.values())

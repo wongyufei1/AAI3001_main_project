@@ -43,7 +43,7 @@ def generate_bbox(masks):
         bbox = [xmin, ymin, xmax, ymax]
         area = (bbox[3] - bbox[1]) * (bbox[2] - bbox[0])
 
-        if area >= 1:
+        if xmin < xmax and ymin < ymax:
             bboxes.append(bbox)
             areas.append(area)
             save_masks.append(mask)

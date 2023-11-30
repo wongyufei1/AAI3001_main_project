@@ -1,5 +1,3 @@
-import os
-
 ORIG_TRAIN_PATH = "../MoNuSeg/MoNuSeg 2018 Training Data"
 ORIG_TEST_PATH = "../MoNuSeg/MoNuSegTestData"
 NEW_DATA_PATH = "../data"
@@ -16,9 +14,9 @@ TRAIN_VAL_FILES = {
     "bladder": ["TCGA-DK-A2I6-01A-01-TS1", "TCGA-G2-A2EK-01A-02-TSB"],
     "colon": ["TCGA-AY-A8YK-01A-01-TS1", "TCGA-NH-A8F7-01A-01-TS1"],
     "stomach": ["TCGA-KB-A93J-01A-01-TS1", "TCGA-RD-A8N9-01A-01-TS1"],
-    "unlabled": ['TCGA-BC-A217-01Z-00-DX1', 'TCGA-F9-A8NY-01Z-00-DX1', 'TCGA-FG-A87N-01Z-00-DX1',
-                 'TCGA-MH-A561-01Z-00-DX1', 'TCGA-UZ-A9PJ-01Z-00-DX1', 'TCGA-UZ-A9PN-01Z-00-DX1',
-                 'TCGA-XS-A8TJ-01Z-00-DX1']
+    "unlabeled": ['TCGA-BC-A217-01Z-00-DX1', 'TCGA-F9-A8NY-01Z-00-DX1', 'TCGA-FG-A87N-01Z-00-DX1',
+                  'TCGA-MH-A561-01Z-00-DX1', 'TCGA-UZ-A9PJ-01Z-00-DX1', 'TCGA-UZ-A9PN-01Z-00-DX1',
+                  'TCGA-XS-A8TJ-01Z-00-DX1']
 }
 
 # brain and lung images are not included in train/val data
