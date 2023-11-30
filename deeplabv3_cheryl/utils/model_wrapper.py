@@ -3,16 +3,11 @@
 
 import gc
 import os
-from deeplabv3_cheryl.utils.metrics_functions import iou
+from utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import torch
 
-from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
-from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
-from tqdm import tqdm
-from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large, DeepLabV3_MobileNet_V3_Large_Weights
-
-from instance.modules.references import engine
+from utils.references import engine
 
 
 class SemanticModelWrapper:

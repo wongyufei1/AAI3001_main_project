@@ -4,12 +4,14 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large, DeepLabV3_MobileNet_V3_Large_Weights
-from deeplabv3_cheryl.utils.CustomDataset import CustomDataset
 import os
 import matplotlib.pyplot as plt
 from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
-from deeplabv3_cheryl.utils.model_wrapper import SemanticModelWrapper
-from deeplabv3_cheryl.utils.config import N_CLASSES, DEVICE, EPOCHS
+
+from utils.CustomDataset import CustomDataset
+from utils.model_wrapper import SemanticModelWrapper
+from utils.fcn_model_wrapper import FCNModelWrapper
+from utils.config import N_CLASSES, DEVICE, EPOCHS
 
 
 
@@ -48,10 +50,42 @@ weights_chosen = None
 best_measure = None
 best_epochs = None
 
-# Model, Loss function, Optimizer
-model = deeplabv3_mobilenet_v3_large(weight = DeepLabV3_MobileNet_V3_Large_Weights)
+# # Model, Loss function, Optimizer
+# model = deeplabv3_mobilenet_v3_large(weight = DeepLabV3_MobileNet_V3_Large_Weights)
+# model = model.to(DEVICE)
+# # model= fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, progress=True).to(device)
+
+# # Training and Validation Loops
+# learning_rates = [0.001, 0.0001]
+# weight_decays = [0.001, 0.0001]
+# train_losses, val_losses = [], []
+# train_ious, val_ious = [], []
+
+# for learning_rate in learning_rates:
+#     for weight_decay in weight_decays:
+#         criterion = nn.BCEWithLogitsLoss()
+#         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay= weight_decay)
+
+#         model_wrapper = SemanticModelWrapper(
+#             model = model,
+#             n_classes = N_CLASSES,
+#             device = DEVICE,
+#             optimizer = optimizer,
+#             epochs = EPOCHS,
+#             criterion = criterion
+#         )
+
+#         epoch, loss, weight = model_wrapper.fit(train_loader, val_loader)
+
+#         print(f'Epoch {epoch+1}/{EPOCHS}, Train Loss: {train_losses[-1]:.4f}, Train IoU: {train_ious[-1]:.4f}, '
+#             f'Val Loss: {val_losses[-1]:.4f}, Val IoU: {val_ious[-1]:.4f}')
+
+# # Save the trained model
+# torch.save(model.state_dict(), 'trained_deeplabv3.pth')
+
+"""Derrick's code"""
+model= fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, progress=True)
 model = model.to(DEVICE)
-# model= fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, progress=True).to(device)
 
 # Training and Validation Loops
 learning_rates = [0.001, 0.0001]
@@ -64,7 +98,7 @@ for learning_rate in learning_rates:
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.Adam(model.parameters(), lr=learning_rate, weight_decay= weight_decay)
 
-        model_wrapper = SemanticModelWrapper(
+        model_wrapper = FCNModelWrapper(
             model = model,
             n_classes = N_CLASSES,
             device = DEVICE,
@@ -79,12 +113,7 @@ for learning_rate in learning_rates:
             f'Val Loss: {val_losses[-1]:.4f}, Val IoU: {val_ious[-1]:.4f}')
 
 # Save the trained model
-torch.save(model.state_dict(), 'trained_deeplabv3.pth')
-
-"""Derrick's code"""
-model= fcn_resnet50(weights=FCN_ResNet50_Weights.COCO_WITH_VOC_LABELS_V1, progress=True).to(device)
-model = model.to(DEVICE)
-
+torch.save(model.state_dict(), 'trained_fcn.pth')
 
 
 
