@@ -43,11 +43,6 @@ class CustomDataset(Dataset):
             if not os.path.exists(mask_path):
                 self._create_mask(annotation_path, Image.open(img_path).size, mask_path)
 
-    def _create_mask(self, xml_path, img_shape, mask_path):
-        mask = self._xml_to_mask(xml_path, img_shape)
-        mask_image = Image.fromarray(mask)
-        mask_image.save(mask_path)
-
     def _xml_to_mask(self, xml_file, img_shape):
         tree = ET.parse(xml_file)
         root = tree.getroot()

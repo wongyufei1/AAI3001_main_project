@@ -4,8 +4,8 @@ import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
 from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large
-from utils.CustomDataset import CustomDataset
-from utils.metrics_functions import iou
+from deeplabv3_cheryl.utils.CustomDataset import CustomDataset
+from deeplabv3_cheryl.utils.metrics_functions import iou
 import os
 import matplotlib.pyplot as plt
 
@@ -14,8 +14,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 """Data Pre-processing"""
 
-images_folder = 'MoNuSeg 2018 Training Data/Tissue Images'
-annotations_folder = 'MoNuSeg 2018 Training Data/Annotations'
+images_folder = '..\MoNuSeg\MoNuSeg 2018 Training Data\Images'
+annotations_folder = '..\MoNuSeg\MoNuSeg 2018 Training Data\Annotations'
 
 image_paths = [os.path.join(images_folder, f) for f in os.listdir(images_folder) if f.endswith('.tif')]
 annotation_paths = [os.path.join(annotations_folder, f.replace('.tif', '.xml')) for f in os.listdir(images_folder) if f.endswith('.tif')]
