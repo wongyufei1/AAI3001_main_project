@@ -11,7 +11,7 @@ from utils.model_wrapper import MRCNNModelWrapper
 if __name__ == "__main__":
     print("Defining transforms...")
     transforms = T.Compose([
-        T.Resize(256, antialias=True),
+        # T.Resize(256, antialias=True),
         T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])

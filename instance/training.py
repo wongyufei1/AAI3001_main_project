@@ -13,20 +13,13 @@ from utils.helper import *
 if __name__ == "__main__":
     print("Defining transforms...")
     train_transforms = {
-        "flip": T.Compose([
-            T.Resize(256, antialias=True),
-            T.RandomHorizontalFlip(),
-            T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
-            T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
-        ]),
-        "rotate": T.Compose([
-            T.Resize(256, antialias=True),
-            T.RandomRotation(10),
+        "default": T.Compose([
+            # T.Resize(256, antialias=True),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
         "contrast": T.Compose([
-            T.Resize(256, antialias=True),
+            # T.Resize(256, antialias=True),
             T.RandomAutocontrast(),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -34,7 +27,7 @@ if __name__ == "__main__":
     }
 
     val_transforms = T.Compose([
-        T.Resize(256, antialias=True),
+        # T.Resize(256, antialias=True),
         T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])

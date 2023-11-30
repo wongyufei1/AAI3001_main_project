@@ -10,8 +10,8 @@ class MoNuSegDataset(Dataset):
     def __init__(self, root, transforms=None):
         self.root = root
         self.transforms = transforms
-        self.img_files = sorted(os.listdir(os.path.join(root, "images")))[:9]
-        self.mask_files = sorted(os.listdir(os.path.join(root, "annotations")))[:9]
+        self.img_files = sorted(os.listdir(os.path.join(root, "images")))
+        self.mask_files = sorted(os.listdir(os.path.join(root, "annotations")))
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.root, "images", self.img_files[idx])

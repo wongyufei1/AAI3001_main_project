@@ -1,9 +1,9 @@
 import numpy as np
 import torch
 
-# DEVICE = "cpu"  # could not use cuda with gpu as required too much memory
-DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
-EPOCHS = 3
+DEVICE = "cpu"  # could not use cuda with gpu as required too much memory
+# DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
+EPOCHS = 10
 BATCH_SIZE = 4
 N_CLASSES = 2
 LRATES = [0.001, 0.0001]
