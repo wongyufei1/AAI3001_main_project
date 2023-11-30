@@ -66,7 +66,7 @@ if __name__ == "__main__":
         if not os.path.exists(split_anno_dir):
             os.makedirs(split_anno_dir)
 
-    # create3 splits of test data
+    # create 3 splits of test data
     for organ, files in TEST_FILES.items():
         for file in files:
             # check for train/val/test data disjoint

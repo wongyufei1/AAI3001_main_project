@@ -65,8 +65,8 @@ class MRCNNModelWrapper:
 
             self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
-            print(f"\nTrain Loss: {train_loss:<30}")
-            print(f"Validation Loss: {val_loss:<30}\n")
+            print(f"\nTrain Loss: {train_loss:<50}")
+            print(f"Validation Loss: {val_loss:<50}\n")
 
             if best_loss is None or best_loss > val_loss:
                 best_epoch = epoch
@@ -141,9 +141,51 @@ class MRCNNModelWrapper:
             output = self.model(img.unsqueeze(0))
 
             # remove unused data from device to avoid OOM
-            del img
+            del img, output
             gc.collect()
             torch.cuda.empty_cache() if self.device == "cuda" else None
 
-        return output
+        return output.to("cpu")
 
+    def predict_batches(self, dataloader, timer=False):
+        # set model to evaluation mode to get detections
+        self.model.eval()
+
+        total_time = 0
+
+        out_imgs = []
+        out_predictions = []
+
+        # do not record computations for computing the gradient
+        with torch.no_grad():
+            time.sleep(0.1)
+            for batch in tqdm(dataloader):
+                imgs = batch[0].to(self.device)
+                targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
+
+                # sync time for gpu if device is gpu
+                if self.device is "cuda":
+                    torch.cuda.synchronize()
+                    start_time = time.perf_counter()
+                else:
+                    start_time = time.time()
+
+                outputs = self.model(imgs, targets)
+
+                # sync time for gpu if device is gpu
+                if self.device is "cuda":
+                    torch.cuda.synchronize()
+                    end_time = time.perf_counter()
+                else:
+                    end_time = time.time()
+
+                total_time += end_time - start_time
+
+                out_imgs.extend(imgs.to("cpu"))
+                out_predictions.extend(outputs)
+
+        # return model's total inference time
+        if timer is True:
+            return out_imgs, out_predictions, total_time
+        else:
+            return out_imgs, out_predictions

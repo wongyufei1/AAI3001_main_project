@@ -3,9 +3,12 @@ import numpy as np
 import torch
 import xml.etree.ElementTree as ET
 import seaborn as sns
+from PIL import Image
 from matplotlib import pyplot as plt
 
 from numpy import int32
+from torchvision.transforms import v2 as T
+from torchvision.utils import draw_bounding_boxes, draw_segmentation_masks
 
 
 def extract_masks(path, size):
@@ -77,3 +80,24 @@ def plot_loss(train_losses, val_losses, path):
 
     plt.savefig(path, bbox_inches="tight")
     plt.show()
+
+
+def draw_predictions(img, prediction):
+    # transform to inverse the normalisation on the images
+    inv_norm = T.Normalize([-0.485 / 0.229, -0.456 / 0.224, -0.406 / 0.225], [1 / 0.229, 1 / 0.224, 1 / 0.225])
+
+    # scale up image
+    img = inv_norm(img).mul(255).add_(0.5).clamp_(0, 255).to(torch.uint8)
+
+    labels = [f"Score: {s:.3f}" for s in prediction["scores"]]
+
+    # draw bboxes
+    bboxes = prediction["boxes"].long()
+    output_img = draw_bounding_boxes(img, bboxes, labels, colors="red")
+
+    # draw masks
+    masks = (prediction["masks"] > 0.7).squeeze(1)
+    output_img = draw_segmentation_masks(output_img, masks, alpha=0.5, colors="blue")
+
+    return Image.fromarray(output_img.permute(1, 2, 0).numpy())
+

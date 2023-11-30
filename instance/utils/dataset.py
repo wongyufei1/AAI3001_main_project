@@ -1,8 +1,5 @@
 import os
 
-import torchvision.transforms.v2 as T
-
-from PIL import Image
 from torch.utils.data import Dataset
 from torchvision import tv_tensors
 
@@ -13,12 +10,12 @@ class MoNuSegDataset(Dataset):
     def __init__(self, root, transforms=None):
         self.root = root
         self.transforms = transforms
-        self.img_files = sorted(os.listdir(os.path.join(root, "Images")))[:9]
-        self.mask_files = sorted(os.listdir(os.path.join(root, "Annotations")))[:9]
+        self.img_files = sorted(os.listdir(os.path.join(root, "images")))[:9]
+        self.mask_files = sorted(os.listdir(os.path.join(root, "annotations")))[:9]
 
     def __getitem__(self, idx):
-        img_path = os.path.join(self.root, "Images", self.img_files[idx])
-        mask_path = os.path.join(self.root, "Annotations", self.mask_files[idx])
+        img_path = os.path.join(self.root, "images", self.img_files[idx])
+        mask_path = os.path.join(self.root, "annotations", self.mask_files[idx])
 
         # load image standardized to RGB, generate instance masks, bboxes and labels
         img = Image.open(img_path).convert("RGB")

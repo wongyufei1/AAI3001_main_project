@@ -11,20 +11,21 @@ from utils.model_wrapper import MRCNNModelWrapper
 from utils.helper import *
 
 if __name__ == "__main__":
+    print("Defining transforms...")
     train_transforms = {
-        "train_flip": T.Compose([
+        "flip": T.Compose([
             T.Resize(256, antialias=True),
             T.RandomHorizontalFlip(),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
-        "train_rotate": T.Compose([
+        "rotate": T.Compose([
             T.Resize(256, antialias=True),
             T.RandomRotation(10),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
-        "train_contrast": T.Compose([
+        "contrast": T.Compose([
             T.Resize(256, antialias=True),
             T.RandomAutocontrast(),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
@@ -38,12 +39,15 @@ if __name__ == "__main__":
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
 
+    """
+        Train and select model based on transform, learning rate, weight decay
+    """
     best_model = {"lrate": None, "wdecay": None, "transform": None, "epoch": None, "loss": None, "weights": None}
 
     for t_name, transform in train_transforms.items():
         dataset = {
-            "train": MoNuSegDataset("../MoNuSeg/MoNuSeg 2018 Training Data", transforms=transform),
-            "val": MoNuSegDataset("../MoNuSeg/MoNuSegTestData", transforms=val_transforms)
+            "train": MoNuSegDataset("../data/train", transforms=transform),
+            "val": MoNuSegDataset("../data/val", transforms=val_transforms)
         }
 
         dataloader = {
@@ -53,6 +57,8 @@ if __name__ == "__main__":
 
         for lr in LRATES:
             for wd in WDECAYS:
+                print(f"Training model...(Transform:{t_name} Learning Rate:{lr} Weight Decay:{wd})")
+
                 model = torchvision.models.detection.maskrcnn_resnet50_fpn(weights="DEFAULT")
 
                 optimizer = torch.optim.Adam(
@@ -79,10 +85,15 @@ if __name__ == "__main__":
                     best_model["loss"] = loss
                     best_model["weights"] = weights
 
+    """
+        Plot and save train and validation loss curves, and save model weights
+    """
     if not os.path.exists(SAVE_PATH):
         os.makedirs(SAVE_PATH)
 
+    # plot and save train and validation loss curves
     plot_loss(model_wrapper.train_losses, model_wrapper.val_losses, os.path.join(SAVE_PATH, "loss.png"))
 
-    print(f"Best model: {best_model}")
+    print(f"Saving best model...(Transform:{best_model['transform']} "
+          f"Learning Rate:{best_model['lrate']} Weight Decay:{best_model['wdecay']})")
     torch.save(best_model["weights"], os.path.join(SAVE_PATH, "model.pt"))
