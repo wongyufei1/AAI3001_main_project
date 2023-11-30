@@ -3,18 +3,20 @@
 
 import gc
 import os
+from deeplabv3_cheryl.utils.metrics_functions import iou
 
 import torch
 
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from tqdm import tqdm
+from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large, DeepLabV3_MobileNet_V3_Large_Weights
 
 from modules.references import engine
 
 
 class SemanticModelWrapper:
-    def __init__(self, model, device="cpu", weights=None, optimizer=None, epochs=None):
+    def __init__(self, model, n_classes, device="cpu", weights=None, optimizer=None, epochs=None, criterion=None):
         self.model = model
         self.device = device
         self.n_classes = n_classes
@@ -22,24 +24,19 @@ class SemanticModelWrapper:
         self.config_model(n_classes, weights)
         self.optimizer = optimizer
         self.epochs = epochs
+        self.criterion = criterion
 
         # store losses for plotting
         self.train_losses = []
         self.val_losses = []
+        self.train_iou = []
+        self.val_ious = []
+
 
     def config_model(self, out_classes, weights):
-        # configurate last layer of bbox predictor
-        in_feats_bbox = self.model.roi_heads.box_predictor.cls_score.in_features
-        self.model.roi_heads.box_predictor = FastRCNNPredictor(in_feats_bbox, out_classes)
-
-        # configurate last layer of mask predictor
-        in_feats_mask = self.model.roi_heads.mask_predictor.conv5_mask.in_channels
-        hidden_layer = 256
-        self.model.roi_heads.mask_predictor = MaskRCNNPredictor(
-            in_feats_mask,
-            hidden_layer,
-            out_classes,
-        )
+        # configurate last layer of deeplabv3
+        in_feats = self.model.classifier.in_features
+        self.model.classifier = deeplabv3_mobilenet_v3_large.DeepLabHead(in_feats, out_classes)
 
         if weights is not None:
             self.model.load_state_dict(weights)
@@ -56,11 +53,13 @@ class SemanticModelWrapper:
         for epoch in range(self.epochs):
             print(f"---------- Epoch {epoch}/{self.epochs - 1} ----------")
 
-            train_loss = self.train(train_loader)
-            val_loss = self.validate(val_loader)
+            train_loss, train_iou = self.train(train_loader)
+            val_loss, val_iou = self.validate(val_loader)
 
-            self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
+            self.val_ious.append(val_iou)
+            self.train_losses.append(train_loss)
+            self.train_ious.append(train_iou)
             print(f"\nTrain Loss: {train_loss:<30}")
             print(f"Validation Loss: {val_loss:<30}\n")
 
@@ -75,59 +74,48 @@ class SemanticModelWrapper:
         # set model to training mode
         self.model.train()
 
-        avg_loss = 0
+        total_train_loss = 0.0
+        total_train_iou = 0.0
 
-        print()
-        for batch in tqdm(dataloader):
-            imgs = batch[0].to(self.device)
-            targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
+        for images, masks in dataloader:
+            images, masks = images.to(self.device), masks.to(self.device)
+            train_outputs = self.model(images)['out']
 
-            # print(imgs)
-            # print(targets)
+            masks = masks.expand(-1, 21, -1, -1)
 
-            outputs = self.model(imgs, targets)
-            # print(outputs)
-
-            # get the average loss of the classifier, bbox predictor, mask predictor
-            loss = sum(l for l in outputs.values())
+            # Assuming masks are single-channel and Long type
+            loss = self.criterion(train_outputs, masks.float())
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            avg_loss += loss
 
-            # remove unused data from device to avoid OOM
-            del imgs, targets, outputs, loss
-            gc.collect()
-            torch.cuda.empty_cache() if self.device == "cuda" else None
+            total_train_loss += loss.item()  # Accumulate the loss
 
-        return avg_loss / len(dataloader)
+            total_train_iou += iou(train_outputs.cpu(), masks.cpu()).item()
+
+        return total_train_loss / len(dataloader), total_train_iou / len(dataloader)
 
     def validate(self, dataloader):
         # set model to train mode to retrieve losses, but do not calculate gradients
-        self.model.train()
+        self.model.eval()
 
-        avg_loss = 0
+        total_val_loss = 0.0
+        total_val_iou = 0.0
 
-        # do not record computations for computing the gradient
         with torch.no_grad():
-            print()
-            for batch in tqdm(dataloader):
-                imgs = batch[0].to(self.device)
-                targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
+            for val_images, val_masks in dataloader:
+                val_images, val_masks = val_images.to(self.device), val_masks.to(self.device)
+                val_outputs = self.model(val_images)['out']
 
-                outputs = self.model(imgs, targets)
-                # print(outputs)
+                masks = masks.expand(-1, 21, -1, -1)
 
-                # get the average loss of the classifier, bbox predictor, mask predictor
-                loss = sum(l for l in outputs.values())
-                avg_loss += loss
+                loss = self.criterion(val_outputs, masks.float())
+                total_val_loss += loss.item()  # Accumulate the loss
 
-                # remove unused data from device to avoid OOM
-                del imgs, targets, outputs, loss
-                gc.collect()
-                torch.cuda.empty_cache() if self.device == "cuda" else None
+                total_val_iou += iou(val_outputs.cpu(), val_masks.cpu()).item()
 
-        return avg_loss / len(dataloader)
+
+        return total_val_loss / len(dataloader), total_val_iou / len(dataloader)
 
     def evaluate(self, dataloader):
         return engine.evaluate(self.model, dataloader, self.device)
