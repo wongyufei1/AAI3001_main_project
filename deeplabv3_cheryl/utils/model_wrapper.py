@@ -3,7 +3,7 @@
 
 import gc
 import os
-from deeplabv3_cheryl.utils.metrics_functions import iou
+from utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import torch
 
@@ -56,13 +56,16 @@ class SemanticModelWrapper:
             self.train_ious.append(train_iou)
             print(f"\nTrain Loss: {train_loss:<30}")
             print(f"Validation Loss: {val_loss:<30}\n")
+            print(f"\nTrain IoU: {train_iou:<30}")
+            print(f"Validation IoU: {val_iou:<30}\n")
 
             if best_loss is None or best_loss > val_loss:
                 best_epoch = epoch
                 best_loss = val_loss
+                best_iou = val_iou
                 best_weights = self.model.state_dict()
 
-        return best_epoch, best_loss, best_weights
+        return best_epoch, best_loss, best_iou, best_weights
 
     def train(self, dataloader):
         # set model to training mode
