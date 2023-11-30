@@ -18,11 +18,11 @@ from deeplabv3_cheryl.utils.helper import plot_loss_iou
 
 """Data Pre-processing"""
 
-train_images_folder = 'data/train/images'
-train_annotations_folder = 'data/train/annotations'
+train_images_folder = '../data/train/images'
+train_annotations_folder = '../data/train/annotations'
 
-val_images_folder = 'data/val/images'
-val_annotations_folder = 'data/val/annotations'
+val_images_folder = '../data/val/images'
+val_annotations_folder = '../data/val/annotations'
 
 train_image_paths = [os.path.join(train_images_folder, f) for f in os.listdir(train_images_folder) if f.endswith('.tif')]
 train_annotation_paths = [os.path.join(train_annotations_folder, f.replace('.tif', '.xml')) for f in os.listdir(train_images_folder) if f.endswith('.tif')]
