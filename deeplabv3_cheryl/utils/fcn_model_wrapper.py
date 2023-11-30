@@ -1,6 +1,7 @@
 import torch.nn as nn
 from deeplabv3_cheryl.utils.model_wrapper import SemanticModelWrapper
 
+
 class FCNModelWrapper(SemanticModelWrapper):
     def __init__(self, model, n_classes, device="cpu", weights=None, optimizer=None, epochs=None, criterion=None):
         # Assuming n_classes is the number of output classes for your FCN mode
@@ -18,3 +19,5 @@ class FCNModelWrapper(SemanticModelWrapper):
         if weights is not None:
             self.model.load_state_dict(weights)
         self.model.to(self.device)
+
+

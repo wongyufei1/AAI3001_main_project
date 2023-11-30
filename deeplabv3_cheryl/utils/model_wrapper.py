@@ -2,10 +2,11 @@
 # https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn
 
 import gc
-import os
-from utils.metrics_functions import iou
+from deeplabv3_cheryl.utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
+import time
 import torch
+from tqdm import tqdm
 
 from deeplabv3_cheryl.utils.references import engine
 
@@ -133,3 +134,45 @@ class SemanticModelWrapper:
 
         return output
 
+    def predict_batches(self, dataloader, timer=False):
+        # set model to evaluation mode to get detections
+        self.model.eval()
+
+        total_time = 0
+
+        out_imgs = []
+        out_predictions = []
+
+        # do not record computations for computing the gradient
+        with torch.no_grad():
+            time.sleep(0.1)
+            for val_images, val_masks in dataloader:
+                val_images, val_masks = val_images.to(self.device), val_masks.to(self.device)
+
+                # sync time for gpu if device is gpu
+                if self.device == "cuda":
+                    torch.cuda.synchronize()
+                    start_time = time.perf_counter()
+                else:
+                    start_time = time.time()
+
+                val_outputs = self.model(val_images)['out']
+                masks = val_masks.expand(-1, 2, -1, -1)
+
+                # sync time for gpu if device is gpu
+                if self.device == "cuda":
+                    torch.cuda.synchronize()
+                    end_time = time.perf_counter()
+                else:
+                    end_time = time.time()
+
+                total_time += end_time - start_time
+
+                out_imgs.extend(val_outputs.to("cpu"))
+                out_predictions.extend(masks.to("cpu"))
+
+        # return model's total inference time
+        if timer is True:
+            return out_imgs, out_predictions, total_time
+        else:
+            return out_imgs, out_predictions

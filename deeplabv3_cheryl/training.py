@@ -10,7 +10,7 @@ from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
 from deeplabv3_cheryl.utils.CustomDataset import CustomDataset
 from deeplabv3_cheryl.utils.model_wrapper import SemanticModelWrapper
 from deeplabv3_cheryl.utils.fcn_model_wrapper import FCNModelWrapper
-from deeplabv3_cheryl.utils.config import N_CLASSES, DEVICE, EPOCHS
+from deeplabv3_cheryl.utils.config import *
 from deeplabv3_cheryl.utils.helper import plot_loss_iou
 
 

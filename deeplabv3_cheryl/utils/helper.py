@@ -7,6 +7,7 @@ from PIL import Image
 from matplotlib import pyplot as plt
 
 
+
 def plot_loss_iou(train_losses, val_losses, train_ious, val_ious, path):
     figure, axes = plt.subplots(1, 2, figsize=(15, 7))
 
@@ -43,3 +44,18 @@ def plot_loss_iou(train_losses, val_losses, train_ious, val_ious, path):
     plt.tight_layout()
     plt.savefig(path, bbox_inches="tight")
     plt.show()
+
+import numpy as np
+
+import numpy as np
+
+def draw_predictions(img, mask_list, threshold=0.5):
+    # Iterate through the list of tensors
+    binary_masks = [(mask.numpy() > threshold).astype(np.uint8) * 255 for mask in mask_list]
+
+    # Create images from the numpy arrays
+    mask_images = [Image.fromarray(mask[0]) for mask in binary_masks]  # Assuming single-channel masks
+
+
+    return mask_images
+
