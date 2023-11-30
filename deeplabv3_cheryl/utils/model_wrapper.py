@@ -4,7 +4,7 @@
 import gc
 import os
 from deeplabv3_cheryl.utils.metrics_functions import iou
-
+from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import torch
 
 from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
@@ -12,7 +12,7 @@ from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from tqdm import tqdm
 from torchvision.models.segmentation import deeplabv3_mobilenet_v3_large, DeepLabV3_MobileNet_V3_Large_Weights
 
-from modules.references import engine
+from instance.modules.references import engine
 
 
 class SemanticModelWrapper:
@@ -29,14 +29,14 @@ class SemanticModelWrapper:
         # store losses for plotting
         self.train_losses = []
         self.val_losses = []
-        self.train_iou = []
+        self.train_ious = []
         self.val_ious = []
 
 
     def config_model(self, out_classes, weights):
         # configurate last layer of deeplabv3
-        in_feats = self.model.classifier.in_features
-        self.model.classifier = deeplabv3_mobilenet_v3_large.DeepLabHead(in_feats, out_classes)
+        self.model.classifier= DeepLabHead(960, out_classes)
+
 
         if weights is not None:
             self.model.load_state_dict(weights)
@@ -81,7 +81,7 @@ class SemanticModelWrapper:
             images, masks = images.to(self.device), masks.to(self.device)
             train_outputs = self.model(images)['out']
 
-            masks = masks.expand(-1, 21, -1, -1)
+            masks = masks.expand(-1, 2, -1, -1)
 
             # Assuming masks are single-channel and Long type
             loss = self.criterion(train_outputs, masks.float())
@@ -107,7 +107,7 @@ class SemanticModelWrapper:
                 val_images, val_masks = val_images.to(self.device), val_masks.to(self.device)
                 val_outputs = self.model(val_images)['out']
 
-                masks = masks.expand(-1, 21, -1, -1)
+                masks = val_masks.expand(-1, 2, -1, -1)
 
                 loss = self.criterion(val_outputs, masks.float())
                 total_val_loss += loss.item()  # Accumulate the loss
