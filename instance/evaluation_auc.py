@@ -28,8 +28,8 @@ if __name__ == "__main__":
         model_wrapper = MRCNNModelWrapper(
             model=model,
             n_classes=N_CLASSES,
-            device=DEVICE
-            # weights=torch.load(os.path.join(SAVE_PATH, "model.pt"), map_location=DEVICE)
+            device=DEVICE,
+            weights=torch.load(os.path.join(SAVE_PATH, "best_model.pt"), map_location=DEVICE)
         )
 
         model_wrapper.evaluate(dataloader=dataloader)

@@ -27,8 +27,8 @@ if __name__ == "__main__":
     model_wrapper = MRCNNModelWrapper(
         model=model,
         n_classes=N_CLASSES,
-        device=DEVICE
-        # weights=torch.load(os.path.join(SAVE_PATH, "model.pt"), map_location=DEVICE)
+        device=DEVICE,
+        weights=torch.load(os.path.join(SAVE_PATH, "best_model.pt"), map_location=DEVICE)
     )
 
     imgs, predictions, infer_time = model_wrapper.predict_batches(dataloader=dataloader, timer=True)

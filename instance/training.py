@@ -11,15 +11,13 @@ from utils.model_wrapper import MRCNNModelWrapper
 from utils.helper import *
 
 if __name__ == "__main__":
-    print("Defining transforms...")
+    print("Defining transforms...\n")
     train_transforms = {
         "default": T.Compose([
-            # T.Resize(256, antialias=True),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
         ]),
         "contrast": T.Compose([
-            # T.Resize(256, antialias=True),
             T.RandomAutocontrast(),
             T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
             T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
@@ -27,7 +25,6 @@ if __name__ == "__main__":
     }
 
     val_transforms = T.Compose([
-        # T.Resize(256, antialias=True),
         T.ToDtype(dtype={tv_tensors.Image: torch.float32, "others": None}, scale=True),
         T.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
     ])
@@ -50,7 +47,7 @@ if __name__ == "__main__":
 
         for lr in LRATES:
             for wd in WDECAYS:
-                print(f"Training model...(Transform:{t_name} Learning Rate:{lr} Weight Decay:{wd})")
+                print(f"Training model...(Transform:{t_name}  Learning Rate:{lr}  Weight Decay:{wd})")
 
                 model = torchvision.models.detection.maskrcnn_resnet50_fpn(weights="DEFAULT")
 
@@ -85,8 +82,8 @@ if __name__ == "__main__":
         os.makedirs(SAVE_PATH)
 
     # plot and save train and validation loss curves
-    plot_loss(model_wrapper.train_losses, model_wrapper.val_losses, os.path.join(SAVE_PATH, "loss.png"))
+    plot_loss(model_wrapper.train_losses, model_wrapper.val_losses, os.path.join(SAVE_PATH, "instance_loss.png"))
 
     print(f"Saving best model...(Transform:{best_model['transform']} "
           f"Learning Rate:{best_model['lrate']} Weight Decay:{best_model['wdecay']})")
-    torch.save(best_model["weights"], os.path.join(SAVE_PATH, "model.pt"))
+    torch.save(best_model["weights"], os.path.join(SAVE_PATH, "best_model.pt"))

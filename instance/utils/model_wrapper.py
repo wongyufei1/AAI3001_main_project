@@ -5,7 +5,7 @@
 # https://github.com/pytorch/vision/blob/main/references/detection/engine.py
 
 import gc
-import sys
+import os
 import time
 
 import torch
@@ -14,6 +14,7 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from tqdm import tqdm
 
+from instance.utils.config import SAVE_PATH
 from instance.utils.references import engine
 
 
@@ -65,13 +66,20 @@ class MRCNNModelWrapper:
 
             self.train_losses.append(train_loss)
             self.val_losses.append(val_loss)
-            print(f"\nTrain Loss: {train_loss:<50}")
-            print(f"Validation Loss: {val_loss:<50}\n")
+            print(f"\nTrain Loss: {train_loss}")
+            print(f"Validation Loss: {val_loss}")
 
             if best_loss is None or best_loss > val_loss:
+                print(f"Best Epoch Validation Loss: {best_loss} -> {val_loss}\n")
                 best_epoch = epoch
                 best_loss = val_loss
                 best_weights = self.model.state_dict()
+
+                # save model checkpoints just in case
+                if not os.path.exists(SAVE_PATH):
+                    os.makedirs(SAVE_PATH)
+
+                torch.save(best_weights, os.path.join(SAVE_PATH, "cp_model.pt"))
 
         return best_epoch, best_loss, best_weights
 
@@ -93,7 +101,7 @@ class MRCNNModelWrapper:
             self.optimizer.zero_grad()
             loss.backward()
             self.optimizer.step()
-            avg_loss += loss
+            avg_loss += loss.detach()
 
             # remove unused data from device to avoid OOM
             del imgs, targets, outputs, loss
@@ -119,7 +127,7 @@ class MRCNNModelWrapper:
 
                 # get the average loss of the classifier, bbox predictor, mask predictor
                 loss = sum(l for l in outputs.values())
-                avg_loss += loss
+                avg_loss += loss.detach()
 
                 # remove unused data from device to avoid OOM
                 del imgs, targets, outputs, loss
@@ -164,7 +172,7 @@ class MRCNNModelWrapper:
                 targets = [{k: v.to(self.device) for k, v in t.items() if k != "image_id"} for t in batch[1]]
 
                 # sync time for gpu if device is gpu
-                if self.device is "cuda":
+                if self.device == "cuda":
                     torch.cuda.synchronize()
                     start_time = time.perf_counter()
                 else:
@@ -173,7 +181,7 @@ class MRCNNModelWrapper:
                 outputs = self.model(imgs, targets)
 
                 # sync time for gpu if device is gpu
-                if self.device is "cuda":
+                if self.device == "cuda":
                     torch.cuda.synchronize()
                     end_time = time.perf_counter()
                 else:

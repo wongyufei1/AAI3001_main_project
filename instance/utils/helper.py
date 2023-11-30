@@ -10,7 +10,6 @@ from numpy import int32
 from torchvision.transforms import v2 as T
 from torchvision.utils import draw_bounding_boxes, draw_segmentation_masks
 
-
 def extract_masks(path, size):
     img_masks = []
 
