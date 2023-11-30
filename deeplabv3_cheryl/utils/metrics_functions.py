@@ -14,7 +14,7 @@ def iou(predicted, target):
     else:
         return intersection / union
 
-def calculate_accuracy(model, data_loader, criterion):
+def calculate_accuracy(model, data_loader):
     model.eval()
     correct_predictions = 0
     total_predictions = 0
@@ -27,7 +27,8 @@ def calculate_accuracy(model, data_loader, criterion):
             outputs = model(images)['out']
             preds = torch.sigmoid(outputs) > 0.5
 
-            masks = masks.expand(-1, 21, -1, -1)
+            # Ensure preds has the same number of channels as masks
+            preds = preds[:, :1, :, :] 
 
             # Calculate overall accuracy
             correct_predictions += (preds == masks).sum().item()
