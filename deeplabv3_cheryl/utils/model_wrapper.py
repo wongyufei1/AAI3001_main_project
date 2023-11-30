@@ -3,11 +3,11 @@
 
 import gc
 import os
-from utils.metrics_functions import iou
+from deeplabv3_cheryl.utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import torch
 
-from utils.references import engine
+from deeplabv3_cheryl.utils.references import engine
 
 
 class SemanticModelWrapper:
@@ -31,11 +31,10 @@ class SemanticModelWrapper:
     def config_model(self, out_classes, weights):
         # configurate last layer of deeplabv3
         self.model.classifier= DeepLabHead(960, out_classes)
-
+        print(out_classes)
 
         if weights is not None:
             self.model.load_state_dict(weights)
-
         self.model.to(self.device)
 
     def fit(self, train_loader, val_loader):
