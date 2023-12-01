@@ -5,10 +5,10 @@ from torch.utils.data import DataLoader
 from torchvision import tv_tensors
 from torchvision.transforms import v2 as T
 
-from utils.config import *
-from utils.dataset import MoNuSegDataset
-from utils.model_wrapper import MRCNNModelWrapper
-from utils.helper import *
+from instance_mrcnn.utils.config import *
+from instance_mrcnn.utils.dataset import MoNuSegDataset
+from instance_mrcnn.utils.model_wrapper import MRCNNModelWrapper
+from instance_mrcnn.utils.helper import *
 
 if __name__ == "__main__":
     print("Defining transforms...\n")

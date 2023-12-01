@@ -10,6 +10,7 @@ from numpy import int32
 from torchvision.transforms import v2 as T
 from torchvision.utils import draw_bounding_boxes, draw_segmentation_masks
 
+
 def extract_masks(path, size):
     img_masks = []
 
@@ -99,4 +100,3 @@ def draw_predictions(img, prediction):
     output_img = draw_segmentation_masks(output_img, masks, alpha=0.5, colors="blue")
 
     return Image.fromarray(output_img.permute(1, 2, 0).numpy())
-
