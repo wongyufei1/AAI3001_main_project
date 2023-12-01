@@ -6,6 +6,7 @@ import xml.etree.ElementTree as ET
 import cv2
 from torchvision import transforms
 
+
 class CustomDataset(Dataset):
     def __init__(self, image_paths, mask_dir, annotation_paths=None, transform=None):
         self.image_paths = image_paths
@@ -61,4 +62,3 @@ class CustomDataset(Dataset):
             cv2.fillPoly(mask, np_polygon, 255)  # Fill polygon with 255
 
         return mask
-
