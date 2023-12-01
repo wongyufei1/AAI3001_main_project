@@ -26,10 +26,9 @@ class SemanticModelWrapper:
         self.train_ious = []
         self.val_ious = []
 
-
     def config_model(self, out_classes, weights):
         # configurate last layer of deeplabv3
-        self.model.classifier= DeepLabHead(960, out_classes)
+        self.model.classifier = DeepLabHead(960, out_classes)
         print(out_classes)
 
         if weights is not None:
@@ -110,11 +109,7 @@ class SemanticModelWrapper:
 
                 total_val_iou += iou(val_outputs.cpu(), val_masks.cpu()).item()
 
-
         return total_val_loss / len(dataloader), total_val_iou / len(dataloader)
-
-    def evaluate(self, dataloader):
-        return engine.evaluate(self.model, dataloader, self.device)
 
     def predict(self, img):
         # set model to evaluation mode to get detections
