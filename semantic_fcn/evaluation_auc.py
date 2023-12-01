@@ -36,9 +36,10 @@ if __name__ == "__main__":
         test_images_folder = f"../data/{split}/images"
         test_annotations_folder = f"../data/{split}/annotations"
 
-        test_image_paths = [os.path.join(test_images_folder, f) for f in os.listdir(test_images_folder) if f.endswith('.tif')]
-        test_annotation_paths = [os.path.join(test_annotations_folder, f.replace('.tif', '.xml')) for f in os.listdir(test_images_folder) if f.endswith('.tif')]
-
+        test_image_paths = [os.path.join(test_images_folder, f) for f in os.listdir(test_images_folder) if
+                            f.endswith('.tif')]
+        test_annotation_paths = [os.path.join(test_annotations_folder, f.replace('.tif', '.xml')) for f in
+                                 os.listdir(test_images_folder) if f.endswith('.tif')]
 
         test_dataset = CustomDataset(
             image_paths=test_image_paths,
@@ -58,7 +59,7 @@ if __name__ == "__main__":
         )
 
         mean_iou = evaluate_model(model_wrapper.model, test_dataloader)
-        test_accuracy = calculate_accuracy(model_wrapper.model, test_dataloader, model_wrapper.criterion)
+        test_accuracy = calculate_accuracy(model_wrapper.model, test_dataloader)
 
         # Print the results
         print(f'Overall Accuracy: {test_accuracy * 100:.2f}%')
@@ -71,4 +72,3 @@ if __name__ == "__main__":
             result_file.write(f'Mean IoU: {mean_iou:.4f}\n')
 
         print(f'Results written to: {result_file_path}')
-
