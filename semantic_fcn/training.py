@@ -80,7 +80,7 @@ if not os.path.exists(SAVE_PATH):
     os.makedirs(SAVE_PATH)
 
 plot_loss_iou(model_wrapper.train_losses, model_wrapper.val_losses, model_wrapper.train_ious, model_wrapper.val_ious,
-              'loss_iou_plot.png')
+              os.path.join(SAVE_PATH, 'loss_iou_plot.png'))
 
 print(f"Saving best model..."
       f"Learning Rate:{best_model['lrate']} Weight Decay:{best_model['wdecay']})"
