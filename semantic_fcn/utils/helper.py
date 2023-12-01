@@ -1,7 +1,3 @@
-import cv2
-import numpy as np
-import torch
-import xml.etree.ElementTree as ET
 import seaborn as sns
 from PIL import Image
 from matplotlib import pyplot as plt

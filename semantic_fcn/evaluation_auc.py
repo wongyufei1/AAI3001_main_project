@@ -1,14 +1,10 @@
 import os
-import torch
-import torch.nn as nn
-from utils.CustomDataset import CustomDataset
 from torch.utils.data import DataLoader
-from torchvision.transforms import transforms
 from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
-from utils.CustomDataset import CustomDataset
-from utils.fcn_model_wrapper import FCNModelWrapper
-from utils.config import *
-from utils.metrics_functions import calculate_accuracy, iou
+from semantic_fcn.utils.CustomDataset import CustomDataset
+from semantic_fcn.utils.fcn_model_wrapper import FCNModelWrapper
+from semantic_fcn.utils.config import *
+from semantic_fcn.utils.metrics_functions import calculate_accuracy, iou
 
 
 def evaluate_model(model, dataloader):

@@ -6,7 +6,6 @@ from semantic_fcn.utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import time
 import torch
-from tqdm import tqdm
 
 
 class SemanticModelWrapper:

@@ -4,10 +4,10 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 import os
 from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
-from utils.CustomDataset import CustomDataset
-from utils.fcn_model_wrapper import FCNModelWrapper
-from utils.helper import plot_loss_iou
-from utils.config import *
+from semantic_fcn.utils.CustomDataset import CustomDataset
+from semantic_fcn.utils.fcn_model_wrapper import FCNModelWrapper
+from semantic_fcn.utils.helper import plot_loss_iou
+from semantic_fcn.utils.config import *
 
 """Data Pre-processing"""
 
