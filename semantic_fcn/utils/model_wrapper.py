@@ -8,8 +8,6 @@ import time
 import torch
 from tqdm import tqdm
 
-from semantic_fcn.utils.references import engine
-
 
 class SemanticModelWrapper:
     def __init__(self, model, n_classes, device="cpu", weights=None, optimizer=None, epochs=None, criterion=None):
