@@ -13,6 +13,7 @@ class CustomDataset(Dataset):
         self.mask_dir = mask_dir
         self.annotation_paths = annotation_paths
         self.transform = transform or transforms.ToTensor()
+        self.norm = transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])
 
         if annotation_paths is not None:
             self.masks = self._create_masks()
@@ -31,7 +32,7 @@ class CustomDataset(Dataset):
         else:
             mask = None
 
-        img = self.transform(img)
+        img = self.norm(self.transform(img))
         if mask is not None:
             mask = self.transform(mask)
 
