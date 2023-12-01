@@ -1,5 +1,5 @@
 import torch.nn as nn
-from deeplabv3_cheryl.utils.model_wrapper import SemanticModelWrapper
+from semantic_fcn.utils.model_wrapper import SemanticModelWrapper
 
 
 class FCNModelWrapper(SemanticModelWrapper):

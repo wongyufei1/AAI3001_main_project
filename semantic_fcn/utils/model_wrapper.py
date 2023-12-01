@@ -2,13 +2,13 @@
 # https://stackoverflow.com/questions/60339336/validation-loss-for-pytorch-faster-rcnn
 
 import gc
-from deeplabv3_cheryl.utils.metrics_functions import iou
+from semantic_fcn.utils.metrics_functions import iou
 from torchvision.models.segmentation.deeplabv3 import DeepLabHead
 import time
 import torch
 from tqdm import tqdm
 
-from deeplabv3_cheryl.utils.references import engine
+from semantic_fcn.utils.references import engine
 
 
 class SemanticModelWrapper:

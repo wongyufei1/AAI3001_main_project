@@ -3,7 +3,7 @@ import os
 from torch.utils.data import Dataset
 from torchvision import tv_tensors
 
-from instance.utils.helper import *
+from instance_mrcnn.utils.helper import *
 
 
 class MoNuSegDataset(Dataset):

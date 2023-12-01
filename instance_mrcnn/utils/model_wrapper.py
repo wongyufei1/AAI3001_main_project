@@ -14,8 +14,8 @@ from torchvision.models.detection.faster_rcnn import FastRCNNPredictor
 from torchvision.models.detection.mask_rcnn import MaskRCNNPredictor
 from tqdm import tqdm
 
-from instance.utils.config import SAVE_PATH
-from instance.utils.references import engine
+from instance_mrcnn.utils.config import SAVE_PATH
+from instance_mrcnn.utils.references import engine
 
 
 class MRCNNModelWrapper:

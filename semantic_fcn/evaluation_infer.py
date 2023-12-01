@@ -1,10 +1,10 @@
 from torch.utils.data import DataLoader
 import os
 from torchvision.models.segmentation import fcn_resnet50, FCN_ResNet50_Weights
-from deeplabv3_cheryl.utils.CustomDataset import CustomDataset
-from deeplabv3_cheryl.utils.fcn_model_wrapper import FCNModelWrapper
-from deeplabv3_cheryl.utils.config import *
-from deeplabv3_cheryl.utils.helper import  draw_predictions
+from semantic_fcn.utils.CustomDataset import CustomDataset
+from semantic_fcn.utils.fcn_model_wrapper import FCNModelWrapper
+from semantic_fcn.utils.config import *
+from semantic_fcn.utils.helper import  draw_predictions
 
 
 test_images_folder = '../data/test_combined/images'
